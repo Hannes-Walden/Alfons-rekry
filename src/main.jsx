@@ -1,8 +1,8 @@
-import './style.css'
+/*import './style.css'
 import heroImg from './assets/hero.png'
 import javascriptLogo from './assets/javascript.svg'
 import viteLogo from './assets/vite.svg'
-import { setupCounter } from './counter.js'
+import { setupCounter } from './counter.jsx'
 
 document.querySelector('#app').innerHTML = `
 <section id="center">
@@ -57,4 +57,13 @@ document.querySelector('#app').innerHTML = `
 <section id="spacer"></section>
 `
 
-setupCounter(document.querySelector('#counter'))
+setupCounter(document.querySelector('#counter'))*/
+
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import App from './App.jsx'
+import './style.css'
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  <App />
+)
