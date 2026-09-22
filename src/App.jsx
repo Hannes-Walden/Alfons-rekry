@@ -7,13 +7,6 @@ function App() {
     const [cities, setCities] = useState([]);
     const [hoveredCity, setHoveredCity] = useState(null);
 
-useEffect(() => {
-    fetch("https://api.sunrise-sunset.org/json?lat=60.1699&lng=24.9384&date_start=2026-01-01&date_end=2026-12-31")
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error(error));
-}, []);
-
     function addCity() {
         if (city.trim() === "") {
             return;
