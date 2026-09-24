@@ -7,6 +7,15 @@ function App() {
     const [cities, setCities] = useState([]);
     const [hoveredCity, setHoveredCity] = useState(null);
 
+    
+
+    useEffect(() => {
+        fetch("http://localhost:8000/daylight.php?city=${city}")
+            .then(response => response.json())
+            .then(data => console.log(data))
+            .catch(error => console.error(error));
+    }, []);
+
     function addCity() {
         if (city.trim() === "") {
             return;
@@ -63,4 +72,3 @@ function App() {
 }
 
 export default App;
-
