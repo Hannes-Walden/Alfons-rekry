@@ -61,15 +61,32 @@ $data = [
 ];
 
 if (isset($data[$city])) {
+
+    $latitude = $data[$city]['latitude'];
+    $longitude = $data[$city]['longitude'];
+
+    $url = "https://api.sunrise-sunset.org/v2"
+        . "?lat=" . $latitude
+        . "&lng=" . $longitude
+        . "&date_start=2026-01-01"
+        . "&date_end=2026-12-31";
+
+    $response = file_get_contents($url);
+
+    $apiData = json_decode($response, true);
+
     echo json_encode([
         'city' => $city,
-        'latitude' => $data[$city]['latitude'],
-        'longitude' => $data[$city]['longitude']
+        'latitude' => $latitude,
+        'longitude' => $longitude,
+        'sun' => $apiData
     ]);
+
 } else {
+
     echo json_encode([
         'error' => 'City not found'
     ]);
-}
 
+}
 ?>

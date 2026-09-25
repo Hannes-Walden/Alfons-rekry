@@ -15,6 +15,8 @@ function App() {
         const data = await response.json();
 
         console.log(data);
+        console.log(data.sun.days);
+        console.log(data.sun.days[0].day_length);
     }
 
     function addCity() {
