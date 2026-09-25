@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 console.log("App.jsx toimii!");
 
@@ -7,17 +7,23 @@ function App() {
     const [cities, setCities] = useState([]);
     const [hoveredCity, setHoveredCity] = useState(null);
 
-    
+    async function searchCity() {
+        const response = await fetch(
+            `http://localhost:8000/daylight.php?city=${city}`
+        );
 
-    useEffect(() => {
-        fetch("http://localhost:8000/daylight.php?city=${city}")
-            .then(response => response.json())
-            .then(data => console.log(data))
-            .catch(error => console.error(error));
-    }, []);
+        const data = await response.json();
+
+        console.log(data);
+    }
 
     function addCity() {
         if (city.trim() === "") {
+            return;
+        }
+
+        if (cities.includes(city)) {
+            console.log("Already on the list");
             return;
         }
 
@@ -28,6 +34,11 @@ function App() {
 
     function removeCity(index) {
         setCities(cities.filter((_, i) => i !== index));
+    }
+
+        function handleCity() {
+        addCity();
+        searchCity();
     }
 
     return (
@@ -44,7 +55,7 @@ function App() {
                 />
             </p>
 
-            <button onClick={addCity}>Enter</button>
+            <button onClick={handleCity}>Enter</button>
 
             <ul>
                 {cities.map((city, index) => (
