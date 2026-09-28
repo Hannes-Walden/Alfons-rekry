@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 console.log("App.jsx toimii!");
 
@@ -6,18 +6,33 @@ function App() {
     const [city, setCity] = useState("");
     const [cities, setCities] = useState([]);
     const [hoveredCity, setHoveredCity] = useState(null);
+    const [daylightData, setDaylightData] = useState([]);
 
-    async function searchCity() {
-        const response = await fetch(
-            `http://localhost:8000/daylight.php?city=${city}`
-        );
+    useEffect(() => {
+        console.log(daylightData);
+    }, [daylightData]);
 
-        const data = await response.json();
+async function searchCity(cityName) {
+    const response = await fetch(
+        `http://localhost:8000/daylight.php?city=${cityName}`
+    );
 
-        console.log(data);
-        console.log(data.sun.days);
-        console.log(data.sun.days[0].day_length);
-    }
+    const data = await response.json();
+
+    const days = data.sun.days;
+
+    setDaylightData(
+        days.map((day) => {
+            const sekunnit = day.day_length;
+            const daylightHours = sekunnit / 3600;
+
+            return {
+                date: day.date,
+                daylight: daylightHours
+            };
+        })
+    );
+}
 
     function addCity() {
         if (city.trim() === "") {
@@ -39,8 +54,10 @@ function App() {
     }
 
         function handleCity() {
+        const cityName = city;
+
         addCity();
-        searchCity();
+        searchCity(cityName);
     }
 
     return (
