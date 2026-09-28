@@ -23,8 +23,8 @@ async function searchCity(cityName) {
 
     setDaylightData(
         days.map((day) => {
-            const sekunnit = day.day_length;
-            const daylightHours = sekunnit / 3600;
+            const seconds = day.day_length;
+            const daylightHours = seconds / 3600;
 
             return {
                 date: day.date,
