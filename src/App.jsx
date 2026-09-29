@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import DaylightChart from "./DaylightChart";
 
 console.log("App.jsx toimii!");
 
@@ -6,11 +7,21 @@ function App() {
     const [city, setCity] = useState("");
     const [cities, setCities] = useState([]);
     const [hoveredCity, setHoveredCity] = useState(null);
+    const [selectedCity, setSelectedCity] = useState(null);
     const [daylightData, setDaylightData] = useState([]);
+    const [cityData, setCityData] = useState({});
 
-    useEffect(() => {
-        console.log(daylightData);
-    }, [daylightData]);
+useEffect(() => {
+    if (selectedCity === null) {
+        return;
+    }
+
+    if (cityData[selectedCity]) {
+        setDaylightData(cityData[selectedCity]);
+    } else {
+        searchCity(selectedCity);
+    }
+}, [selectedCity, cityData]);
 
 async function searchCity(cityName) {
     const response = await fetch(
@@ -21,17 +32,22 @@ async function searchCity(cityName) {
 
     const days = data.sun.days;
 
-    setDaylightData(
-        days.map((day) => {
-            const seconds = day.day_length;
-            const daylightHours = seconds / 3600;
+const newData = days.map((day) => {
+        const seconds = day.day_length;
+        const daylightHours = seconds / 3600;
 
-            return {
-                date: day.date,
-                daylight: daylightHours
-            };
-        })
-    );
+        return {
+            date: day.date,
+            daylight: daylightHours
+        };
+    });
+
+    setCityData((oldData) => ({
+        ...oldData,
+        [cityName]: newData
+    }));
+
+    setDaylightData(newData);
 }
 
     function addCity() {
@@ -81,7 +97,10 @@ async function searchCity(cityName) {
                     <li key={index} className="flex items-center gap-2">
                         <span
                             className="city-name"
-                            onMouseEnter={() => setHoveredCity(city)}
+                            onMouseEnter={() => {
+                                setHoveredCity(city);
+                                setSelectedCity(city);
+                            }}
                             onMouseLeave={() => setHoveredCity(null)}
                             >
                         {city}
@@ -95,6 +114,8 @@ async function searchCity(cityName) {
                     </li>
                 ))}
             </ul>
+
+            <DaylightChart daylightData={daylightData} />
 
         </>
     );
