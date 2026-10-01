@@ -10,6 +10,7 @@ function App() {
     const [selectedCity, setSelectedCity] = useState(null);
     const [daylightData, setDaylightData] = useState([]);
     const [cityData, setCityData] = useState({});
+    const [error, setError] = useState("");
 
 useEffect(() => {
     if (selectedCity === null) {
@@ -30,9 +31,26 @@ async function searchCity(cityName) {
 
     const data = await response.json();
 
+    if (data.error) {
+        setError(`Unknown city: ${cityName}`);
+        return false;
+    }
+
+    setError("");
+
     const days = data.sun.days;
 
-const newData = days.map((day) => {
+    const newData = days.map((day) => {
+        
+    if (day.day_length === null && 
+        day.sunrise !== null &&
+        day.sunset === null) {
+        return {
+            date: day.date,
+            daylight: 24
+        };
+    }
+
         const seconds = day.day_length;
         const daylightHours = seconds / 3600;
 
@@ -48,32 +66,41 @@ const newData = days.map((day) => {
     }));
 
     setDaylightData(newData);
+
+    return true;
 }
-
-    function addCity() {
-        if (city.trim() === "") {
-            return;
-        }
-
-        if (cities.includes(city)) {
-            console.log("Already on the list");
-            return;
-        }
-
-        setCities([...cities, city]);
-        setCity("");
-
-    }
 
     function removeCity(index) {
         setCities(cities.filter((_, i) => i !== index));
     }
 
-        function handleCity() {
-        const cityName = city;
+async function handleCity() {
+    const cityName = city.trim();
 
-        addCity();
-        searchCity(cityName);
+    if (cityName === "") {
+        return;
+    }
+
+    if (cities.includes(cityName)) {
+        console.log("Already on the list");
+        return;
+    }
+
+    const success = await searchCity(cityName);
+
+    if (success) {
+        setCities([...cities, cityName]);
+        setCity("");
+    }
+}
+
+    function resetChart() {
+        setDaylightData([]);
+        setSelectedCity(null);
+        setCities([]);
+        setError("");
+        setHoveredCity(null);
+        setCity("");
     }
 
     return (
@@ -91,6 +118,7 @@ const newData = days.map((day) => {
             </p>
 
             <button onClick={handleCity}>Enter</button>
+            <button onClick={resetChart}>Reset</button>
 
             <ul>
                 {cities.map((city, index) => (
@@ -116,6 +144,8 @@ const newData = days.map((day) => {
             </ul>
 
             <DaylightChart daylightData={daylightData} />
+
+            {error && <p>{error}</p>}
 
         </>
     );
