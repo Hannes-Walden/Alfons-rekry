@@ -100,12 +100,16 @@ if (isset($data[$city])) {
 
     $latitude = $data[$city]['latitude'];
     $longitude = $data[$city]['longitude'];
+    $city = $_GET['city'] ?? '';
+    $year = $_GET['year'] ?? null;
+    $startDate = $year . "-01-01";
+    $endDate = $year . "-12-31";
 
     $url = "https://api.sunrise-sunset.org/v2"
         . "?lat=" . $latitude
         . "&lng=" . $longitude
-        . "&date_start=2026-01-01"
-        . "&date_end=2026-12-31";
+        . "&date_start=" . $startDate
+        . "&date_end=" . $endDate;
 
     $response = file_get_contents($url);
 

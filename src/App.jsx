@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import DaylightChart from "./DaylightChart";
+import SelectYear from "./SelectYear";
 
 console.log("App.jsx toimii!");
 
@@ -11,22 +12,25 @@ function App() {
     const [daylightData, setDaylightData] = useState([]);
     const [cityData, setCityData] = useState({});
     const [error, setError] = useState("");
+    const [year, setYear] = useState("2026");
 
 useEffect(() => {
     if (selectedCity === null) {
         return;
     }
 
-    if (cityData[selectedCity]) {
-        setDaylightData(cityData[selectedCity]);
-    } else {
-        searchCity(selectedCity);
-    }
-}, [selectedCity, cityData]);
+    const cacheKey = `${selectedCity}-${year}`;
 
-async function searchCity(cityName) {
+    if (cityData[cacheKey]) {
+        setDaylightData(cityData[cacheKey]);
+    } else {
+        searchCity(selectedCity, year);
+    }
+}, [selectedCity, year, cityData]);
+
+async function searchCity(cityName, year) {
     const response = await fetch(
-        `http://localhost:8000/daylight.php?city=${cityName}`
+        `http://localhost:8000/daylight.php?city=${cityName}&year=${year}`
     );
 
     const data = await response.json();
@@ -60,9 +64,11 @@ async function searchCity(cityName) {
         };
     });
 
+    const cacheKey = `${cityName}-${year}`;
+
     setCityData((oldData) => ({
         ...oldData,
-        [cityName]: newData
+        [cacheKey]: newData
     }));
 
     setDaylightData(newData);
@@ -86,7 +92,7 @@ async function handleCity() {
         return;
     }
 
-    const success = await searchCity(cityName);
+    const success = await searchCity(cityName, year);
 
     if (success) {
         setCities([...cities, cityName]);
@@ -104,8 +110,14 @@ async function handleCity() {
     }
 
     return (
-        <>
-            <h1>Daylight</h1>
+        <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-5xl">
+            <h1 className="mb-6 text-3xl font-bold sm:text-4xl">Daylight</h1>
+
+            <SelectYear
+                year={year}
+                setYear={setYear}
+            />
 
             <p>
                 Enter city name:
@@ -117,8 +129,10 @@ async function handleCity() {
                 />
             </p>
 
-            <button onClick={handleCity}>Enter</button>
-            <button onClick={resetChart}>Reset</button>
+            <div className="mt-4 flex flex-wrap gap-2">
+            <button onClick={handleCity} className="rounded bg-blue-600 px-4 py-2 text-white">Enter</button>
+            <button onClick={resetChart} className="rounded bg-gray-200 px-4 py-2">Reset</button>
+            </div>
 
             <ul>
                 {cities.map((city, index) => (
@@ -143,11 +157,14 @@ async function handleCity() {
                 ))}
             </ul>
 
+            <div className="h-[300px] sm:h-[400px]">
             <DaylightChart daylightData={daylightData} />
+            </div>
 
             {error && <p>{error}</p>}
 
-        </>
+            </div>
+        </div>
     );
 
 }
