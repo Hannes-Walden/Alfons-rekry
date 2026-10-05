@@ -93,6 +93,12 @@ $data = [
 ], 'Varkaus' => [
     'latitude' => 62.3153,
     'longitude' => 27.8730
+], 'Mikkeli' => [
+    'latitude' => 61.6878,
+    'longitude' => 27.2732
+], 'Savonlinna' => [
+    'latitude' => 61.8699,
+    'longitude' => 28.8800
 ]
 ];
 
