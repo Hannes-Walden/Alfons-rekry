@@ -126,6 +126,11 @@ async function handleCity() {
                     placeholder="city"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            handleCity();
+                        }
+                    }}
                 />
             </p>
 
@@ -147,7 +152,12 @@ async function handleCity() {
                             >
                         {city}
                         </span>
-                        <button onClick={() => removeCity(index)}>Remove</button>
+                        <button
+                        onClick={() => removeCity(index)}
+                        className="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white hover:bg-red-600"
+                        >
+                        −
+                        </button>
                         {hoveredCity === city && (
                             <span className="ml-4">
                                 kuvaaja kaupungille: {city}
