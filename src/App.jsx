@@ -77,7 +77,13 @@ async function searchCity(cityName, year) {
 }
 
     function removeCity(index) {
-        setCities(cities.filter((_, i) => i !== index));
+        const newCities = cities.filter((_, i) => i !== index);
+
+        setCities(newCities);
+
+        if (newCities.length === 0) {
+            setDaylightData([]);
+        }
     }
 
 async function handleCity() {
@@ -99,15 +105,6 @@ async function handleCity() {
         setCity("");
     }
 }
-
-    function resetChart() {
-        setDaylightData([]);
-        setSelectedCity(null);
-        setCities([]);
-        setError("");
-        setHoveredCity(null);
-        setCity("");
-    }
 
     return (
         <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
@@ -136,7 +133,6 @@ async function handleCity() {
 
             <div className="mt-4 flex flex-wrap gap-2">
             <button onClick={handleCity} className="rounded bg-blue-600 px-4 py-2 text-white">Enter</button>
-            <button onClick={resetChart} className="rounded bg-gray-200 px-4 py-2">Reset</button>
             </div>
 
             <ul>
