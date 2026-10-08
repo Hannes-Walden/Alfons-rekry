@@ -20,6 +20,7 @@ function DaylightChart({ daylightData }) {
             <Line
                 type="monotone"
                 dataKey="daylight"
+                dot={true}
             />
         </LineChart>
     </ResponsiveContainer>

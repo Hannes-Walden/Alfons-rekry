@@ -57,11 +57,11 @@ $longitude = $location['longitude'];
 
     $apiData = json_decode($response, true);
 
-    echo json_encode([
-        'city' => $city,
-        'latitude' => $latitude,
-        'longitude' => $longitude,
-        'sun' => $apiData
-    ]);
+echo json_encode([
+    'city' => $city,
+    'latitude' => $latitude,
+    'longitude' => $longitude,
+    'sun' => $apiData
+]);
 
 ?>

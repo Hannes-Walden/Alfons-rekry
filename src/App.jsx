@@ -44,19 +44,34 @@ async function searchCity(cityName, year) {
 
     const days = data.sun.days;
 
-    const newData = days.map((day) => {
-        
-    if (day.day_length === null && 
-        day.sunrise !== null &&
-        day.sunset === null) {
-        return {
-            date: day.date,
-            daylight: 24
-        };
-    }
 
-        const seconds = day.day_length;
-        const daylightHours = seconds / 3600;
+    const newData = days.map((day, index) => {
+
+    const nextDay = days[index + 1];
+
+    if (day.sun_status === "midnight_sun") {
+    return {
+        date: day.date,
+        daylight: 24
+    };
+}
+
+let daylightHours;
+
+if (day.day_length !== null) {
+    daylightHours = day.day_length / 3600;
+} else if (
+    day.sunrise !== null &&
+    day.sunset === null &&
+    nextDay?.sunset !== null
+) {
+    const sunrise = new Date(day.sunrise);
+    const nextSunset = new Date(nextDay.sunset);
+
+    daylightHours = (nextSunset - sunrise) / 3600000;
+} else {
+    daylightHours = 0;
+}
 
         return {
             date: day.date,
@@ -93,9 +108,13 @@ async function handleCity() {
         return;
     }
 
-    if (cities.includes(cityName)) {
-        console.log("Already on the list");
-        return;
+    const alreadyExists = cities.some(
+    (existingCity) => existingCity.toLowerCase() === cityName.toLowerCase()
+    );
+
+    if (alreadyExists) {
+    console.log("Already on the list");
+    return;
     }
 
     const success = await searchCity(cityName, year);
