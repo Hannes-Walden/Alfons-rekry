@@ -28,6 +28,33 @@ useEffect(() => {
     }
 }, [selectedCity, year, cityData]);
 
+const combinedDaylightData = (() => {
+    const availableCities = cities
+        .map((city) => ({
+            city,
+            data: cityData[`${city}-${year}`]
+        }))
+        .filter((item) => Array.isArray(item.data));
+
+    const dates = availableCities[0]?.data ?? [];
+
+    return dates.map((day) => {
+        const row = { date: day.date };
+
+        availableCities.forEach(({ city, data }) => {
+            const cityDay = data.find(
+                (item) => item.date === day.date
+            );
+
+            if (cityDay) {
+                row[city] = cityDay.daylight;
+            }
+        });
+
+        return row;
+    });
+})();
+
 async function searchCity(cityName, year) {
     const response = await fetch(
         `http://localhost:8000/daylight.php?city=${cityName}&year=${year}`
@@ -175,7 +202,7 @@ async function handleCity() {
                         </button>
                         {hoveredCity === city && (
                             <span className="ml-4">
-                                kuvaaja kaupungille: {city}
+                                Chart for a city: {city}
                             </span>
                         )}
                     </li>
@@ -183,7 +210,10 @@ async function handleCity() {
             </ul>
 
             <div className="h-[300px] sm:h-[400px]">
-            <DaylightChart daylightData={daylightData} />
+            <DaylightChart
+            daylightData={combinedDaylightData}
+            cities={cities}
+/>
             </div>
 
             {error && <p>{error}</p>}
