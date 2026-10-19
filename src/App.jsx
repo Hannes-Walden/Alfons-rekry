@@ -28,6 +28,7 @@ useEffect(() => {
     }
 }, [selectedCity, year, cityData]);
 
+
 const combinedDaylightData = (() => {
     const availableCities = cities
         .map((city) => ({
@@ -186,10 +187,7 @@ async function handleCity() {
                     <li key={index} className="flex items-center gap-2">
                         <span
                             className="city-name"
-                            onMouseEnter={() => {
-                                setHoveredCity(city);
-                                setSelectedCity(city);
-                            }}
+                            onMouseEnter={() => setHoveredCity(city)}
                             onMouseLeave={() => setHoveredCity(null)}
                             >
                         {city}
@@ -213,7 +211,8 @@ async function handleCity() {
             <DaylightChart
             daylightData={combinedDaylightData}
             cities={cities}
-/>
+            hoveredCity={hoveredCity}
+            />
             </div>
 
             {error && <p>{error}</p>}
