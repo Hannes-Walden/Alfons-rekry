@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import DaylightChart from "./DaylightChart";
 import SelectYear from "./SelectYear";
+import EqualDates from "./EqualDates";
 
 console.log("App.jsx toimii!");
 
@@ -14,19 +15,27 @@ function App() {
     const [error, setError] = useState("");
     const [year, setYear] = useState("2026");
 
+    const pendingRequests = useRef(new Set());
+
 useEffect(() => {
-    if (selectedCity === null) {
-        return;
-    }
+    cities.forEach((cityName) => {
+        const cacheKey = `${cityName}-${year}`;
 
-    const cacheKey = `${selectedCity}-${year}`;
+        if (Array.isArray(cityData[cacheKey])) {
+            return;
+        }
 
-    if (cityData[cacheKey]) {
-        setDaylightData(cityData[cacheKey]);
-    } else {
-        searchCity(selectedCity, year);
-    }
-}, [selectedCity, year, cityData]);
+        if (pendingRequests.current.has(cacheKey)) {
+            return;
+        }
+
+        pendingRequests.current.add(cacheKey);
+
+        searchCity(cityName, year).finally(() => {
+            pendingRequests.current.delete(cacheKey);
+        });
+    });
+}, [cities, year, cityData]);
 
 
 const combinedDaylightData = (() => {
@@ -212,6 +221,10 @@ async function handleCity() {
             daylightData={combinedDaylightData}
             cities={cities}
             hoveredCity={hoveredCity}
+            />
+            <EqualDates
+                daylightData={combinedDaylightData}
+                cities={cities}
             />
             </div>
 
